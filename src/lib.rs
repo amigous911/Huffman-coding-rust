@@ -32,24 +32,26 @@ fn generate_tree(data: &mut Vec<u8>) -> Result<TreeNode, &'static str> {
     // sort data for faster search later
     data.sort();
 
-    // create a set from data to search with
-    let mut data_set = data.clone();
-    data_set.dedup();
-
-    // generating nodes in a vector
+    // generating Huffman-tree nodes in a vector
     let mut nodes_vec: Vec<TreeNode> = Vec::new();
     let mut start_pos: usize = 0;
-    for value in &data_set {
-        let end_pos = data.partition_point(|&x| x <= *value);
+    while start_pos < data.len() {
+        let value = data[start_pos];
+        let mut end_pos: usize = start_pos + 1;
+
+        while end_pos < data.len() && data[end_pos] == value {
+            end_pos += 1
+        }
+
         nodes_vec.push(TreeNode::new(
-            Some(value.clone()),
-            end_pos - start_pos,
-            None,
-            None,
+            Some(value), 
+            end_pos - start_pos, 
+            None, 
+            None
         ));
         start_pos = end_pos;
     }
-
+    
     // merging nodes (create tree root)
     nodes_vec.sort_by_key(|k| k.freq);
     while nodes_vec.len() >= 2 {
