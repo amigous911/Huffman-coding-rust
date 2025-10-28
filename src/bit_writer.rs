@@ -50,8 +50,29 @@ impl BitWriter {
         self.bit_pos -= 1;
     }
 
+    fn get_bits(&self) -> u32 {
+        let mut result: u32 = 0;
+
+        if self.buffer.len() == 0 {
+            return self.current_byte as u32;
+        }
+
+        for (index, byte) in self.buffer.iter().enumerate() {
+            result |= *byte as u32;
+            if index != self.buffer.len() - 1 {
+                result <<= 8;
+            }
+        }
+
+        result
+    }
+
+    fn get_len(&self) -> u8 {
+        (self.buffer.len() * 8) as u8 + self.bit_pos
+    }
+    
     /// returns a copy of the buffer so the original one retain its values
-    pub fn clone_bits(&mut self) -> Vec<u8> {
+    pub fn clone_bits_buffer(&mut self) -> Vec<u8> {
         let mut result = self.buffer.clone();
         if self.bit_pos > 0 {
             self.current_byte <<= 8 - self.bit_pos;
@@ -62,7 +83,7 @@ impl BitWriter {
     }
 
     /// returns the buffer and replaces it with an empty one
-    pub fn get_bits(&mut self) -> Vec<u8> {
+    pub fn get_bits_buffer(&mut self) -> Vec<u8> {
         if self.bit_pos > 0 {
             self.current_byte <<= 8 - self.bit_pos;
             self.buffer.push(self.current_byte);
