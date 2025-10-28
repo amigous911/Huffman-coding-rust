@@ -1,9 +1,9 @@
 #[derive(Debug)]
 pub struct TreeNode {
-    value: Option<u8>,
+    pub value: Option<u8>,
     freq: usize,
-    left: Option<Box<TreeNode>>,
-    right: Option<Box<TreeNode>>,
+    pub left: Option<Box<TreeNode>>,
+    pub right: Option<Box<TreeNode>>,
 }
 
 impl TreeNode {

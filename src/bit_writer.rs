@@ -50,7 +50,7 @@ impl BitWriter {
         self.bit_pos -= 1;
     }
 
-    fn get_bits(&self) -> u32 {
+    pub fn get_bits(&self) -> u32 {
         let mut result: u32 = 0;
 
         if self.buffer.len() == 0 {
@@ -67,7 +67,7 @@ impl BitWriter {
         result
     }
 
-    fn get_len(&self) -> u8 {
+    pub fn get_len(&self) -> u8 {
         (self.buffer.len() * 8) as u8 + self.bit_pos
     }
     
