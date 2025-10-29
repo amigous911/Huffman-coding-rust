@@ -2,9 +2,9 @@ use crate::bit_writer::BitWriter;
 use crate::huffman_tree::TreeNode;
 use std::collections::HashMap;
 
-struct Code {
-    bits: u32,
-    len: u8,
+pub struct Code {
+    pub bits: u32,
+    pub len: u8,
 }
 
 pub fn create_map_table(tree: &TreeNode) -> HashMap<u8, Code> {
