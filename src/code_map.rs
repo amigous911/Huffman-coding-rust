@@ -22,7 +22,7 @@ fn traverse(root: &TreeNode, map: &mut HashMap<u8, Code>, bit_writer: &mut BitWr
             root.value.unwrap(),
             Code {
                 bits: bit_writer.get_bits(),
-                len: bit_writer.get_len(),
+                len: bit_writer.get_len() as u8,
             },
         );
 

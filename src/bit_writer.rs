@@ -67,8 +67,8 @@ impl BitWriter {
         result
     }
 
-    pub fn get_len(&self) -> u8 {
-        (self.buffer.len() * 8) as u8 + self.bit_pos
+    pub fn get_len(&self) -> u32 {
+        (self.buffer.len() * 8) as u32 + self.bit_pos as u32
     }
     
     /// returns a copy of the buffer so the original one retain its values
