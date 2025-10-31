@@ -1,11 +1,11 @@
-struct BitReader {
+pub struct BitReader {
     buffer: Vec<u8>,
     current_byte: u8,
     bit_pos: u8,
 }
 
 impl BitReader {
-    fn new(buffer: Vec<u8>) -> Result<BitReader, &'static str> {
+    pub fn new(buffer: Vec<u8>) -> Result<BitReader, &'static str> {
         if buffer.len() == 0 {
             return Err("buffer length can't be zero");
         }
@@ -17,11 +17,11 @@ impl BitReader {
         })
     }
 
-    fn is_empyt(&self) -> bool {
+    pub fn is_empyt(&self) -> bool {
         self.buffer.len() == 0 && self.bit_pos == 0
     }
 
-    fn get_byte(&mut self) -> Option<u8> {
+    pub fn get_byte(&mut self) -> Option<u8> {
         if self.buffer.len() == 0 {
             return None;
         }
@@ -36,7 +36,7 @@ impl BitReader {
         Some(result)
     }
 
-    fn get_bit(&mut self) -> Option<bool> {
+    pub fn get_bit(&mut self) -> Option<bool> {
         if self.is_empyt() {
             return None;
         }
