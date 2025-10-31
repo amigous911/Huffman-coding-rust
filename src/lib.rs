@@ -9,6 +9,7 @@
 mod bit_writer;
 mod code_map;
 mod huffman_tree;
+mod bit_reader;
 
 pub fn encode(data: Vec<u8>) -> Result<Vec<u8>, &'static str> {
     let mut encoded_data: Vec<u8> = Vec::new();
