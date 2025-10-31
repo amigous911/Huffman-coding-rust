@@ -6,10 +6,10 @@
 *   x bytes -> actual data
 */
 
+mod bit_reader;
 mod bit_writer;
 mod code_map;
 mod huffman_tree;
-mod bit_reader;
 
 pub fn encode(data: Vec<u8>) -> Result<Vec<u8>, &'static str> {
     let mut encoded_data: Vec<u8> = Vec::new();
@@ -58,5 +58,17 @@ fn serialize_tree(root: &huffman_tree::TreeNode, bit_writer: &mut bit_writer::Bi
                 serialize_tree(&right, bit_writer);
             }
         }
+    }
+}
+
+fn deserialize_tree(
+    bit_reader: &mut bit_reader::BitReader,
+) -> huffman_tree::DeserializedTreeNode {
+    if bit_reader.get_bit().unwrap() {
+        huffman_tree::DeserializedTreeNode::new(bit_reader.get_byte(), None, None)
+    } else {
+        let left = deserialize_tree(bit_reader);
+        let right = deserialize_tree(bit_reader);
+        huffman_tree::DeserializedTreeNode::new(None, Some(left), Some(right))
     }
 }

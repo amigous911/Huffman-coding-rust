@@ -28,6 +28,32 @@ impl TreeNode {
     }
 }
 
+pub struct DeserializedTreeNode {
+    pub value: Option<u8>,
+    pub left: Option<Box<DeserializedTreeNode>>,
+    pub right: Option<Box<DeserializedTreeNode>>,
+}
+
+impl DeserializedTreeNode {
+    pub fn new(
+        value: Option<u8>,
+        left: Option<DeserializedTreeNode>,
+        right: Option<DeserializedTreeNode>,
+    ) -> DeserializedTreeNode {
+        DeserializedTreeNode {
+            value: value,
+            left: match left {
+                Some(value) => Some(Box::new(value)),
+                None => None,
+            },
+            right: match right {
+                Some(value) => Some(Box::new(value)),
+                None => None,
+            },
+        }
+    }
+}
+
 pub fn generate_tree(mut data: Vec<u8>) -> Result<TreeNode, &'static str> {
     // sort data for faster search later
     data.sort();
