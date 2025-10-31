@@ -73,17 +73,6 @@ impl BitWriter {
         (self.buffer.len() * 8) as u32 + self.bit_pos as u32
     }
     
-    /// returns a copy of the buffer so the original one retain its values
-    pub fn clone_bits_buffer(&mut self) -> Vec<u8> {
-        let mut result = self.buffer.clone();
-        if self.bit_pos > 0 {
-            self.current_byte <<= 8 - self.bit_pos;
-            result.push(self.current_byte);
-            self.current_byte >>= 8 - self.bit_pos;
-        }
-        result
-    }
-
     /// returns the buffer and replaces it with an empty one
     pub fn get_bits_buffer(&mut self) -> Vec<u8> {
         if self.bit_pos > 0 {
