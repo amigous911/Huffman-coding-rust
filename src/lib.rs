@@ -11,6 +11,10 @@ use std::{
     fs::File,
     io::{BufReader, Read},
 };
+use bit_reader::BitReader;
+use bit_writer::BitWriter;
+use huffman_tree::{TreeNode, DeserializedTreeNode, generate_tree};
+use code_map::create_map_table;
 
 mod bit_reader;
 mod bit_writer;
@@ -19,10 +23,10 @@ mod huffman_tree;
 
 pub fn encode(data: Vec<u8>) -> Result<Vec<u8>, &'static str> {
     let mut encoded_data: Vec<u8> = Vec::new();
-    let mut bit_writer = bit_writer::BitWriter::new();
+    let mut bit_writer = BitWriter::new();
 
     // generate tree
-    let tree = huffman_tree::generate_tree(data.clone())?;
+    let tree = generate_tree(data.clone())?;
 
     // serialize and store tree
     serialize_tree(&tree, &mut bit_writer);
@@ -30,7 +34,7 @@ pub fn encode(data: Vec<u8>) -> Result<Vec<u8>, &'static str> {
     encoded_data.extend(bit_writer.get_bits_buffer());
 
     // map values to codes
-    let map = code_map::create_map_table(&tree);
+    let map = create_map_table(&tree);
 
     // encoding
     for byte in &data {
@@ -45,7 +49,7 @@ pub fn encode(data: Vec<u8>) -> Result<Vec<u8>, &'static str> {
     Ok(encoded_data)
 }
 
-fn serialize_tree(root: &huffman_tree::TreeNode, bit_writer: &mut bit_writer::BitWriter) {
+fn serialize_tree(root: &TreeNode, bit_writer: &mut BitWriter) {
     match root.value {
         Some(value) => {
             bit_writer.write_bit(1);
@@ -99,11 +103,11 @@ pub fn decode(mut data: BufReader<File>) -> Result<Vec<u8>, Box<dyn Error>> {
     }
 
     // deserialzie tree
-    let mut bit_reader = bit_reader::BitReader::new(tree_bytes)?;
+    let mut bit_reader = BitReader::new(tree_bytes)?;
     let tree = deserialize_tree(&mut bit_reader);
 
     // decode
-    let mut bit_reader = bit_reader::BitReader::new(encoded_data)?;
+    let mut bit_reader = BitReader::new(encoded_data)?;
     let mut current_node = &tree;
 
     loop {
@@ -152,12 +156,12 @@ pub fn decode(mut data: BufReader<File>) -> Result<Vec<u8>, Box<dyn Error>> {
     Ok(decoded_data)
 }
 
-fn deserialize_tree(bit_reader: &mut bit_reader::BitReader) -> huffman_tree::DeserializedTreeNode {
+fn deserialize_tree(bit_reader: &mut BitReader) -> DeserializedTreeNode {
     if bit_reader.get_bit().unwrap() {
-        huffman_tree::DeserializedTreeNode::new(bit_reader.get_byte(), None, None)
+        DeserializedTreeNode::new(bit_reader.get_byte(), None, None)
     } else {
         let left = deserialize_tree(bit_reader);
         let right = deserialize_tree(bit_reader);
-        huffman_tree::DeserializedTreeNode::new(None, Some(left), Some(right))
+        DeserializedTreeNode::new(None, Some(left), Some(right))
     }
 }
