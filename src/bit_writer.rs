@@ -42,7 +42,7 @@ impl BitWriter {
         // pull last byte from buffer if current byte is empty
         if self.bit_pos == 0 {
             self.current_byte = self.buffer.pop().unwrap();
-            self.bit_pos = 7;
+            self.bit_pos = 8;
         }
 
         // deleting bit
@@ -63,6 +63,8 @@ impl BitWriter {
                 result <<= 8;
             }
         }
+        result <<= self.bit_pos;
+        result |= self.current_byte as u32;
 
         result
     }
