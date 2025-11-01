@@ -1,5 +1,10 @@
 use huffman_coding::{decode, encode};
-use std::{env, fs, io::Write, path::Path, process};
+use std::{
+    env, fs,
+    io::{BufReader, Read, Write},
+    path::Path,
+    process,
+};
 
 struct Arguments {
     source_file: String,
@@ -73,5 +78,48 @@ fn main() {
     let arguments = Arguments::new(&args).unwrap_or_else(|err| {
         eprintln!("problem parsing arguments: {}", err);
         process::exit(1);
+    });
+
+    // prepare files
+    let mut source_file = fs::File::open(&arguments.source_file).unwrap_or_else(|err| {
+        eprintln!(
+            "problem opening source file {}: {}",
+            arguments.source_file, err
+        );
+        process::exit(1);
+    });
+    let mut output_file = fs::File::create(&arguments.dest_file).unwrap_or_else(|err| {
+        eprintln!(
+            "problem creating output file {}: {}",
+            arguments.dest_file, err
+        );
+        process::exit(2);
+    });
+
+    // encode/decode
+    let result: Vec<u8> = if arguments.decode_flag {
+        decode(BufReader::new(source_file)).unwrap_or_else(|err| {
+            eprintln!("problem decoding file {}: {}", arguments.source_file, err);
+            process::exit(3);
+        })
+    } else {
+        let mut data: Vec<u8> = Vec::new();
+        source_file.read_to_end(&mut data).unwrap_or_else(|_| {
+            eprintln!("problem reading source file {}", arguments.source_file);
+            process::exit(1);
+        });
+        encode(data).unwrap_or_else(|err| {
+            eprintln!("problem encoding file {}: {}", arguments.source_file, err);
+            process::exit(3);
+        })
+    };
+
+    // write result
+    output_file.write_all(&result).unwrap_or_else(|err| {
+        eprintln!(
+            "problem writing to output file {}: {}",
+            arguments.dest_file, err
+        );
+        process::exit(2);
     });
 }
