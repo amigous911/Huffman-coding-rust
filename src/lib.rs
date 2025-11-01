@@ -43,7 +43,7 @@ pub fn encode(data: Vec<u8>) -> Result<Vec<u8>, &'static str> {
     }
 
     // write last byte length and encoding result
-    encoded_data.push(bit_writer.get_len() as u8);
+    encoded_data.push((bit_writer.get_len() % 8) as u8);
     encoded_data.extend(bit_writer.get_bits_buffer());
 
     Ok(encoded_data)
